@@ -5,11 +5,11 @@ import java.util.List;
 
 public class Driver{
 
+	public static final String FIELD_NAME = "Driver";
+	
 	private String name;
 
 	private int totalMiles;
-
-	private double averageSpeed;
 
 	private double totalTripsTime = 0;
 	
@@ -22,16 +22,11 @@ public class Driver{
 	public Driver(String name, int totalMiles, double averageSpeed){
 		this.name = name;
 		this.totalMiles = totalMiles;
-		this.averageSpeed = averageSpeed;
 		this.trips = new ArrayList<Trip>();
 	}
 
 	public void setName(String name){
 		this.name = name;
-	}
-
-	public void setAverageSpeed(double averageSpeed){
-		this.averageSpeed = averageSpeed;
 	}
 
 	public void setTotalMiles(int totalMiles){
@@ -50,8 +45,11 @@ public class Driver{
 		return totalMiles;
 	}
 
+	public List<Trip> getTriprs(){
+		return trips;
+	}
+	
 	public void addTrip(Trip trip){
-		
 		if (trip.isOutOfSpeedRange()){
 			return;
 		}

@@ -8,15 +8,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.ValidationException;
+
 import com.trip.test.model.Driver;
 import com.trip.test.model.Trip;
+import com.trip.test.util.InputValidator;
 
 public class Controller {
 
 	private static Map<String, Driver> nameToDriver = new HashMap<>();
 
 	public static void main(String args[]) {
-		// if arg sis empty, that means user hasn't provided a file name
+		// if args is empty, that means user hasn't provided a file name
 		if (args.length == 0) {
 			System.out.println("Proper Usage is: java -jar trip-test.jar <file-name>");
 			System.exit(0);
@@ -26,22 +29,34 @@ public class Controller {
 
 		try {
 			Files.lines(Paths.get(fileName)).forEach(line -> {
-				String[] commandValues = line.split(" ");
-				switch (commandValues[0]) {
-				case "Driver":
-					Driver driver = new Driver(commandValues[1]);
-					nameToDriver.put(commandValues[1], driver);
-					break;
-				case "Trip":
-					Trip trip = new Trip(commandValues[2], commandValues[3], Double.parseDouble(commandValues[4]));
-					linkTripToDriver(trip, commandValues[1]);
-					break;
-				default:
-					break;
+				try {
+					String[] commandValues = line.split(" ");
+					String command = commandValues[0];
+
+					if (!InputValidator.isValidCommand(command)) {
+						throw new ValidationException("Please enter a valid command: Driver or Trip");
+					}
+
+					switch (command) {
+					case Driver.FIELD_NAME:
+						InputValidator.validateDriverInput(commandValues);
+						Driver driver = new Driver(commandValues[1]);
+						nameToDriver.put(commandValues[1], driver);
+						break;
+					case Trip.FIELD_NAME:
+						InputValidator.validateTripInput(commandValues);
+						Trip trip = new Trip(commandValues[2], commandValues[3], Double.parseDouble(commandValues[4]));
+						linkTripToDriver(trip, commandValues[1]);
+						break;
+					default:
+						break;
+					}
+				} catch (ValidationException e) {
+					System.out.println(e.getMessage());
 				}
 			});
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 
 		printReport();

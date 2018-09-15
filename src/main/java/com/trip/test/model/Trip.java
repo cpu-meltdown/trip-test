@@ -5,6 +5,8 @@ import java.util.Calendar;
 
 public class Trip {
 
+	public static final String FIELD_NAME = "Trip";
+	
 	private String startTime;
 
 	private String endTime;

@@ -1,1 +1,4 @@
+com/trip/test/model/TripTest.class
+com/trip/test/InputValidatorTest.class
+com/trip/test/ControllerTest.class
 com/trip/test/model/DriverTest.class
