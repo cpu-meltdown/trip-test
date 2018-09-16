@@ -8,7 +8,6 @@ public class DriverTest {
 
 	@Test
 	public void testAddTrip() {
-
 		// valid trip
 		Driver driver = new Driver("Nabil");
 		Trip trip = new Trip("17:10", "17:30", 20.0);
