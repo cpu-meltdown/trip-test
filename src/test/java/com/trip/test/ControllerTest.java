@@ -1,24 +1,25 @@
 package com.trip.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.xml.bind.ValidationException;
 
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 public class ControllerTest {
 
-	@Rule
-	public TemporaryFolder testFolder = new TemporaryFolder();
+	private static Controller controller;
+
+	@Before
+	public void init() {
+		controller = new Controller();
+	}
 
 	@Test
 	public void testMainMethodNegative() {
@@ -39,28 +40,41 @@ public class ControllerTest {
 
 	@Test
 	public void testReadFileNegative() throws IOException, ValidationException {
-		String fileName = "test.txt";
-
 		try {
-			BufferedReader fileBr = new BufferedReader(new FileReader(fileName));
-			Controller.readFile(fileBr);
-		} catch (IOException e) {
-			assertEquals(
-					"Error while trying to read from input file. Please make sure you've provided the correct file name.",
-					e.getMessage());
-		}
+			BufferedReader fileBr = mock(BufferedReader.class);
+			when(fileBr.readLine()).thenReturn("This is a test");
 
-		File testFile = testFolder.newFile(fileName);
-
-		BufferedWriter bw = new BufferedWriter(new FileWriter(testFile));
-		bw.write("This is a test");
-		bw.close();
-
-		try {
-			BufferedReader fileBr = new BufferedReader(new FileReader(fileName));
-			Controller.readFile(fileBr);
-		} catch (IOException e) {
+			controller.readFile(fileBr);
+		} catch (ValidationException e) {
 			assertEquals("Please enter a valid command: Driver or Trip", e.getMessage());
 		}
+
+		try {
+			BufferedReader fileBr = mock(BufferedReader.class);
+			when(fileBr.readLine()).thenReturn("Driver");
+			controller.readFile(fileBr);
+		} catch (ValidationException e) {
+			assertEquals("Please enter proper Driver information: Driver <name>", e.getMessage());
+		}
+
+		try {
+			BufferedReader fileBr = mock(BufferedReader.class);
+			when(fileBr.readLine()).thenReturn("Trip hello world");
+			controller.readFile(fileBr);
+		} catch (ValidationException e) {
+			assertEquals("Please enter proper Trip information", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testReadFilePositive() throws IOException, ValidationException {
+		Controller controller = new Controller();
+		BufferedReader fileBr = mock(BufferedReader.class);
+		when(fileBr.readLine()).thenReturn("Driver Test1").thenReturn("Trip Test1 10:13 10:30 5.2")
+				.thenReturn("Driver Test2").thenReturn(null);
+
+		controller.readFile(fileBr);
+		assertEquals(2, controller.getNameToDriverMap().size());
+		assertEquals(5, controller.getNameToDriverMap().get("Test1").getTotalMiles());
 	}
 }

@@ -33,9 +33,12 @@ public class Controller {
 
 	private final static Logger logger = Logger.getLogger(Controller.class);
 
-	private static Map<String, Driver> nameToDriver = new HashMap<>();
+	private Map<String, Driver> nameToDriver = new HashMap<>();
 
 	public static void main(String args[]) throws ValidationException {
+		
+		Controller controller = new Controller();
+		
 		// if args is empty, that means user hasn't provided a file name
 		if (args.length == 0) {
 			logger.error("No file name was provided from the user.");
@@ -47,7 +50,7 @@ public class Controller {
 
 		try {
 			BufferedReader fileBr = new BufferedReader(new FileReader(file));
-			readFile(fileBr);
+			controller.readFile(fileBr);
 		} catch (FileNotFoundException e) {
 			logger.error("Provided file: " + file + " was not found.");
 			System.out.println(e.getMessage());
@@ -57,7 +60,7 @@ public class Controller {
 		}
 
 		// out put to a file named "report.txt"
-		printReport();
+		controller.printReport();
 	}
 
 	/**
@@ -69,7 +72,7 @@ public class Controller {
 	 *             exception reading the file
 	 * @throws ValidationException validation exception
 	 */
-	protected static void readFile(BufferedReader fileBr) throws IOException, ValidationException {
+	protected void readFile(BufferedReader fileBr) throws IOException, ValidationException {
 		try {
 			String line = null;
 			while ((line = fileBr.readLine()) != null) {
@@ -94,7 +97,7 @@ public class Controller {
 					break;
 				default:
 					break;
-				}
+				}	
 			}
 		} catch (IOException e) {
 			throw new IOException(
@@ -108,7 +111,7 @@ public class Controller {
 	 * Writes the results to a "report.txt" file in the project directory. The
 	 * report should be sorted by miles traveled in descending order.
 	 */
-	private static void printReport() {
+	private void printReport() {
 		List<Driver> drivers = new ArrayList<>(nameToDriver.values());
 
 		drivers.sort((Driver d1, Driver d2) -> d2.getTotalMiles() - d1.getTotalMiles());
@@ -139,7 +142,7 @@ public class Controller {
 	 * @param driverName
 	 *            driver name that trip belongs to
 	 */
-	private static void linkTripToDriver(Trip trip, String driverName) {
+	private void linkTripToDriver(Trip trip, String driverName) {
 		Driver driver = null;
 		if (nameToDriver.containsKey(driverName)) {
 			driver = nameToDriver.get(driverName);
