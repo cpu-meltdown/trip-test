@@ -12,6 +12,8 @@ import javax.xml.bind.ValidationException;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.trip.test.model.Trip;
+
 public class ControllerTest {
 
 	private static Controller controller;
@@ -76,5 +78,18 @@ public class ControllerTest {
 		controller.readFile(fileBr);
 		assertEquals(2, controller.getNameToDriverMap().size());
 		assertEquals(5, controller.getNameToDriverMap().get("Test1").getTotalMiles());
+	}
+
+	@Test
+	public void testLinkTripToDriver() {
+		Trip trip = new Trip("12:31", "13:00", 12.3);
+		String driverName = null;
+
+		controller.linkTripToDriver(trip, driverName);
+		assertEquals(0, controller.getNameToDriverMap().size());
+		
+		driverName = "test";
+		controller.linkTripToDriver(trip, driverName);
+		assertEquals(1, controller.getNameToDriverMap().size());
 	}
 }

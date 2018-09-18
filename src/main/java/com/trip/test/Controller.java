@@ -36,9 +36,9 @@ public class Controller {
 	private Map<String, Driver> nameToDriver = new HashMap<>();
 
 	public static void main(String args[]) throws ValidationException {
-		
+
 		Controller controller = new Controller();
-		
+
 		// if args is empty, that means user hasn't provided a file name
 		if (args.length == 0) {
 			logger.error("No file name was provided from the user.");
@@ -70,7 +70,8 @@ public class Controller {
 	 *            the file to read from
 	 * @throws IOException
 	 *             exception reading the file
-	 * @throws ValidationException validation exception
+	 * @throws ValidationException
+	 *             validation exception
 	 */
 	protected void readFile(BufferedReader fileBr) throws IOException, ValidationException {
 		try {
@@ -97,7 +98,7 @@ public class Controller {
 					break;
 				default:
 					break;
-				}	
+				}
 			}
 		} catch (IOException e) {
 			throw new IOException(
@@ -142,7 +143,11 @@ public class Controller {
 	 * @param driverName
 	 *            driver name that trip belongs to
 	 */
-	private void linkTripToDriver(Trip trip, String driverName) {
+	protected void linkTripToDriver(Trip trip, String driverName) {
+		if (trip == null || driverName == null) {
+			return;
+		}
+
 		Driver driver = null;
 		if (nameToDriver.containsKey(driverName)) {
 			driver = nameToDriver.get(driverName);
