@@ -1,4 +1,4 @@
-package com.trip.test;
+package com.trip.test.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
