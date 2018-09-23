@@ -23,5 +23,11 @@ The reason why I followed this design pattern is that I wanted to seperate the a
 
 Navigate to the project's directory, and run the following command: `mvn clean install`. This is assuming that `maven` is installed on the machine. If maven is not installed on the machine, then please [download maven](http://maven.apache.org/download.cgi) and then [install it](http://maven.apache.org/install.html).
 
-Once we get a successful build, 
+Include the data file `*.txt` in the project's directory. Once the maven build is successful, run the following command from the project's directory:
+
+`java -jar target/trip-test-jar-with-dependencies.jar <filename>`
+
+Please insure to substitute `<filename>` with the valid data file.
+
+If the program runs successfully and you see `Success`, then please navigate to the project's directory and there should be a file `report.txt` that contains the final report.
 

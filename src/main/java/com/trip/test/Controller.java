@@ -23,147 +23,144 @@ import com.trip.test.model.Trip;
 import com.trip.test.util.InputValidator;
 
 /**
- * This class handles input/output from terminal and keeps track of drivers and
- * their trips
+ * This class handles input/output from terminal and keeps track of drivers and their trips
  * 
  * @author nabil baalbaki
  *
  */
 public class Controller {
 
-	private final static Logger logger = Logger.getLogger(Controller.class);
+    private final static Logger logger = Logger.getLogger( Controller.class );
 
-	private Map<String, Driver> nameToDriver = new HashMap<>();
+    private Map<String, Driver> nameToDriver = new HashMap<>();
 
-	public static void main(String args[]) throws ValidationException {
+    public static void main( String args[] ) throws ValidationException {
 
-		Controller controller = new Controller();
+        Controller controller = new Controller();
 
-		// if args is empty, that means user hasn't provided a file name
-		if (args.length == 0) {
-			logger.error("No file name was provided from the user.");
-			throw new ValidationException("Proper Usage is: java -jar trip-test.jar <file-name>");
-		}
+        // if args is empty, that means user hasn't provided a file name
+        if ( args.length == 0 ) {
+            logger.error( "No file name was provided from the user." );
+            throw new ValidationException( "Proper Usage is: java -jar trip-test.jar <file-name>" );
+        }
 
-		// the filename to read from
-		File file = new File(System.getProperty("user.dir") + "/" + args[0]);
+        // the filename to read from
+        File file = new File( System.getProperty( "user.dir" ) + "/" + args[0] );
 
-		try {
-			BufferedReader fileBr = new BufferedReader(new FileReader(file));
-			controller.readFile(fileBr);
-		} catch (FileNotFoundException e) {
-			logger.error("Provided file: " + file + " was not found.");
-			System.out.println(e.getMessage());
-		} catch (IOException e) {
-			logger.error("Error while trying to read from input file.");
-			System.out.println(e.getMessage());
-		}
+        try {
+            BufferedReader fileBr = new BufferedReader( new FileReader( file ) );
+            controller.readFile( fileBr );
+        } catch ( FileNotFoundException e ) {
+            logger.error( "Provided file: " + file + " was not found." );
+            System.out.println( e.getMessage() );
+        } catch ( IOException e ) {
+            logger.error( "Error while trying to read from input file." );
+            System.out.println( e.getMessage() );
+        }
 
-		// out put to a file named "report.txt"
-		controller.printReport();
-	}
+        // out put to a file named "report.txt"
+        controller.printReport();
 
-	/**
-	 * Reads the commands from the provided file
-	 * 
-	 * @param fileBr
-	 *            the file to read from
-	 * @throws IOException
-	 *             exception reading the file
-	 * @throws ValidationException
-	 *             validation exception
-	 */
-	protected void readFile(BufferedReader fileBr) throws IOException, ValidationException {
-		try {
-			String line = null;
-			while ((line = fileBr.readLine()) != null) {
-				String[] commandValues = line.split(" ");
-				String command = commandValues[0];
+        System.out.println( "Success" );
+    }
 
-				if (!InputValidator.isValidCommand(command)) {
-					logger.error("Wrong command value was provided: " + command);
-					throw new ValidationException("Please enter a valid command: Driver or Trip");
-				}
+    /**
+     * Reads the commands from the provided file
+     * 
+     * @param fileBr the file to read from
+     * @throws IOException exception reading the file
+     * @throws ValidationException validation exception
+     */
+    protected void readFile( BufferedReader fileBr ) throws IOException, ValidationException {
+        try {
+            String line = null;
+            while ( ( line = fileBr.readLine() ) != null ) {
+                String[] commandValues = line.split( " " );
+                String command = commandValues[0];
 
-				switch (command) {
-				case Driver.FIELD_NAME:
-					InputValidator.validateDriverInput(commandValues);
-					Driver driver = new Driver(commandValues[1]);
-					nameToDriver.put(commandValues[1], driver);
-					break;
-				case Trip.FIELD_NAME:
-					InputValidator.validateTripInput(commandValues);
-					Trip trip = new Trip(commandValues[2], commandValues[3], Double.parseDouble(commandValues[4]));
-					linkTripToDriver(trip, commandValues[1]);
-					break;
-				default:
-					break;
-				}
-			}
-		} catch (IOException e) {
-			throw new IOException(
-					"Error while trying to read from input file. Please make sure you've provided the correct file name.");
-		} catch (ValidationException e) {
-			throw e;
-		}
-	}
+                if ( !InputValidator.isValidCommand( command ) ) {
+                    logger.error( "Wrong command value was provided: " + command );
+                    throw new ValidationException( "Please enter a valid command: Driver or Trip" );
+                }
 
-	/**
-	 * Writes the results to a "report.txt" file in the project directory. The
-	 * report should be sorted by miles traveled in descending order.
-	 */
-	private void printReport() {
-		List<Driver> drivers = new ArrayList<>(nameToDriver.values());
+                switch ( command ) {
+                    case Driver.FIELD_NAME:
+                        InputValidator.validateDriverInput( commandValues );
+                        Driver driver = new Driver( commandValues[1] );
+                        nameToDriver.put( commandValues[1], driver );
+                        break;
+                    case Trip.FIELD_NAME:
+                        InputValidator.validateTripInput( commandValues );
+                        Trip trip = new Trip( commandValues[2], commandValues[3],
+                            Double.parseDouble( commandValues[4] ) );
+                        linkTripToDriver( trip, commandValues[1] );
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } catch ( IOException e ) {
+            throw new IOException(
+                "Error while trying to read from input file. Please make sure you've provided the correct file name." );
+        } catch ( ValidationException e ) {
+            throw e;
+        }
+    }
 
-		drivers.sort((Driver d1, Driver d2) -> d2.getTotalMiles() - d1.getTotalMiles());
+    /**
+     * Writes the results to a "report.txt" file in the project directory. The report should be sorted by miles traveled
+     * in descending order.
+     */
+    private void printReport() {
+        List<Driver> drivers = new ArrayList<>( nameToDriver.values() );
 
-		List<String> results = new ArrayList<>();
+        drivers.sort( ( Driver d1, Driver d2 ) -> d2.getTotalMiles() - d1.getTotalMiles() );
 
-		drivers.forEach(driver -> {
-			results.add(driver.getTotalMiles() > 0
-					? String.format("%s: %d miles @ %d mph", driver.getName(), driver.getTotalMiles(),
-							driver.getAverageSpeed())
-					: String.format("%s: %d miles", driver.getName(), driver.getTotalMiles()));
-		});
+        List<String> results = new ArrayList<>();
 
-		try {
-			Path file = Paths.get("report.txt");
-			Files.write(file, results, Charset.forName("UTF-8"));
-		} catch (IOException e) {
-			logger.error("Error writing to output report file");
-			System.out.println("Error writing to output report file");
-		}
-	}
+        drivers.forEach( driver -> {
+            results.add( driver.getTotalMiles() > 0
+                ? String.format( "%s: %d miles @ %d mph", driver.getName(), driver.getTotalMiles(),
+                    driver.getAverageSpeed() )
+                : String.format( "%s: %d miles", driver.getName(), driver.getTotalMiles() ) );
+        } );
 
-	/**
-	 * Adds the provided trip to nameToDriver map
-	 * 
-	 * @param trip
-	 *            trip to link to driver
-	 * @param driverName
-	 *            driver name that trip belongs to
-	 */
-	protected void linkTripToDriver(Trip trip, String driverName) {
-		if (trip == null || driverName == null) {
-			return;
-		}
+        try {
+            Path file = Paths.get( "report.txt" );
+            Files.write( file, results, Charset.forName( "UTF-8" ) );
+        } catch ( IOException e ) {
+            logger.error( "Error writing to output report file" );
+            System.out.println( "Error writing to output report file" );
+        }
+    }
 
-		Driver driver = null;
-		if (nameToDriver.containsKey(driverName)) {
-			driver = nameToDriver.get(driverName);
-			driver.addTrip(trip);
-			nameToDriver.put(driverName, driver);
-		} else {
-			driver = new Driver(driverName);
-			driver.addTrip(trip);
-			nameToDriver.put(driverName, driver);
-		}
-	}
+    /**
+     * Adds the provided trip to nameToDriver map
+     * 
+     * @param trip trip to link to driver
+     * @param driverName driver name that trip belongs to
+     */
+    protected void linkTripToDriver( Trip trip, String driverName ) {
+        if ( trip == null || driverName == null ) {
+            return;
+        }
 
-	/**
-	 * @return nameToDriver map
-	 */
-	public Map<String, Driver> getNameToDriverMap() {
-		return nameToDriver;
-	}
+        Driver driver = null;
+        if ( nameToDriver.containsKey( driverName ) ) {
+            driver = nameToDriver.get( driverName );
+            driver.addTrip( trip );
+            nameToDriver.put( driverName, driver );
+        } else {
+            driver = new Driver( driverName );
+            driver.addTrip( trip );
+            nameToDriver.put( driverName, driver );
+        }
+    }
+
+    /**
+     * @return nameToDriver map
+     */
+    public Map<String, Driver> getNameToDriverMap() {
+        return nameToDriver;
+    }
 }
